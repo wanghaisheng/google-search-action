@@ -5,9 +5,11 @@ import pandas as pd
 
 def fetch_search_results(query, num_results=100):
     results = []
-    for url in search(query, num_results=num_results, stop=num_results, pause=2):
-        # Use BeautifulSoup to fetch the title and description
-        # The title is typically the text displayed in the search result.
+    # Use the num_results to control the number of pages fetched
+    for i, url in enumerate(search(query, num_results=num_results)):
+        if i >= num_results:
+            break
+        # Use the URL for the title and description (mocked here)
         title = url.split('/')[2].replace("-", " ").title()
         description = "Description for {}".format(title)
         results.append({"URL": url, "Title": title, "Description": description})
