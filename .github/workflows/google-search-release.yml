@@ -1,0 +1,42 @@
+name: Google Search and Upload to Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      search_query:
+        description: 'Enter Google Search Query'
+        required: true
+        default: 'GitHub Actions tutorial'
+
+jobs:
+  search_and_release:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Python environment
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install googlesearch-python pandas
+
+      # Run the Python script with the input query
+      - name: Run Google Search script
+        run: |
+          python google_search.py "${{ github.event.inputs.search_query }}"
+
+      # Create a GitHub Release and upload the CSV file
+      - name: Create a release and upload the CSV
+        uses: softprops/action-gh-release@v1
+        with:
+          files: google_search_results.csv
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
