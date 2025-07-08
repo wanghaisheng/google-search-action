@@ -27,5 +27,5 @@ if __name__ == "__main__":
 # :param str tbs: Time limits (i.e "qdr:h" => last hour,
   # "qdr:y1"
         # "qdr:d" => last 24 hours, "qdr:m" => last month).
-    results = fetch_search_results(query, tbs="qdr:h1",num_results=100)
+    results = fetch_search_results(query, tbs="qdr:h24",num_results=100)
     save_to_csv(results)
