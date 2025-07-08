@@ -22,8 +22,10 @@ def save_to_csv(results, filename="google_search_results.csv"):
 
 if __name__ == "__main__":
     query = sys.argv[1]
+    # specify tbs parameter in search function, like search('"Breaking Code" WordPress blog', tbs="qdr:y1", stop=20), where y[number] / m[number] / d[number] is same as described in dateRestrict parameter here.
+
 # :param str tbs: Time limits (i.e "qdr:h" => last hour,
   # "qdr:y1"
         # "qdr:d" => last 24 hours, "qdr:m" => last month).
-    results = fetch_search_results(query, tbs="qdr:h",num_results=100)
+    results = fetch_search_results(query, tbs="qdr:h1",num_results=100)
     save_to_csv(results)
