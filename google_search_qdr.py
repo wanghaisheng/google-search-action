@@ -7,7 +7,7 @@ import pandas as pd
 def fetch_search_results(query, tbs="qdr:d1",num_results=100):
     results = []
     # Use the num_results to control the number of pages fetched
-    for i, url in enumerate(search(query, tbs=tbs,num_results=num_results)):
+    for i, url in enumerate(search(query, tbs=tbs,num=num_results)):
         if i >= num_results:
             break
         # Use the URL for the title and description (mocked here)
