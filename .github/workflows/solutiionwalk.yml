@@ -10,7 +10,7 @@ on:
       timeframe:
         description: 'Enter Google Search ttiimefrrame'
         required: true
-        default: 'h1'
+        default: 'qdr:h1'
         
 
 jobs:
