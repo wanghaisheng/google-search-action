@@ -105,8 +105,12 @@ if __name__ == "__main__":
         sys.exit(1)
         
     query = sys.argv[1]
+    timeframe=sys.argv[2]
+    tbs="qdr:h1"
     
+    if  timeframe:
+        tbs=timeframe
     # :param str tbs: Time limits ("qdr:h" => last hour, "qdr:d" => last 24 hours, "qdr:y1" => last year).
-    results = fetch_search_results(query, tbs="qdr:h6", num_results=20)
+    results = fetch_search_results(query, tbs=tbs, num_results=100)
     
     save_to_csv(results)
