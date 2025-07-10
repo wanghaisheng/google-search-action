@@ -36,7 +36,7 @@ jobs:
       # Run the Python script with the input query
       - name: Run Google Search script
         run: |
-          python google_search_qdr.py "${{ github.event.inputs.search_query }}" "${{github.event.inputs.timeframe}}"
+          python google_adsense_new.py "${{ github.event.inputs.search_query }}" "${{github.event.inputs.timeframe}}"
 
       # Commit and push the result CSV file to the repository
       - name: Commit CSV file with search results
