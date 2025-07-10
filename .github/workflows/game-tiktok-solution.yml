@@ -1,14 +1,14 @@
-name: game solution youutube Search-1h and Commit Results
+name: game solution tiktok Search-1h and Commit Results
 
 on:
   workflow_dispatch:
     inputs:
       search_query:
-        description: 'Enter Google Search Query'
+        description: 'Enter tiktok Search Query'
         required: true
         default: 'site:tiktok.com "level  walkthrough"'
       timeframe:
-        description: 'Enter Google Search ttiimefrrame'
+        description: 'Enter tiktok Search ttiimefrrame'
         required: true
         default: 'qdr:h1'
         
