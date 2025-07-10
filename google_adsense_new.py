@@ -193,15 +193,13 @@ def save_to_csv(results, folder_name="results", filename="results.csv"):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 5:
-        print("Usage: python your_script_name.py \"<query>\" <timeframe> <detector_name> <category>")
+    if len(sys.argv) < 3:
+        print("Usage: python your_script_name.py \"<query>\" <timeframe>")
         print("\n<timeframe> can be: 'qdr:h' (hour), 'qdr:d' (day), 'qdr:w' (week), 'qdr:m' (month)")
         sys.exit(1)
         
     query = sys.argv[1]
     timeframe = sys.argv[2]
-    detector_name = sys.argv[3]
-    category = sys.argv[4]
     
     # --- Main Execution ---
     scraped_results = fetch_search_results(query, tbs=timeframe, num_results=100)
