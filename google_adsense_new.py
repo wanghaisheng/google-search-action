@@ -8,7 +8,7 @@ import os
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 import re
-import whois # New import
+import json
 
 # Define a user-agent to mimic a real browser visit
 HEADERS = {
@@ -31,30 +31,64 @@ def get_domain_from_url(url):
     except Exception:
         return None
 
+def get_rdap_server(tld):
+    """
+    Returns the RDAP server URL for a given TLD by querying IANA's RDAP bootstrap service.
+    """
+    try:
+        response = requests.get("https://data.iana.org/rdap/dns.json", headers=HEADERS, timeout=10)
+        response.raise_for_status()
+        rdap_data = response.json()
+        for entry in rdap_data['services']:
+            tlds = entry[0]
+            rdap_urls = entry[1]
+            if tld in tlds:
+                return rdap_urls[0]  # Return the first RDAP URL for the TLD
+        return None
+    except requests.RequestException:
+        return None
+
 def is_newly_registered(domain, days=30):
     """
-    Checks if a domain was registered within the last 'days'.
+    Checks if a domain was registered within the last 'days' using RDAP.
     Returns True if new, False if not, 'Error' if check fails.
     """
     if not domain:
         return 'N/A'
     try:
-        w = whois.whois(domain)
-        creation_date = w.creation_date
+        # Extract TLD from domain
+        tld = domain.split('.')[-1]
+        rdap_server = get_rdap_server(tld)
+        if not rdap_server:
+            return 'Error'  # No RDAP server found for this TLD
+
+        # Construct RDAP query URL
+        rdap_url = f"{rdap_server.rstrip('/')}/domain/{domain}"
+        response = requests.get(rdap_url, headers=HEADERS, timeout=10)
+        response.raise_for_status()
+        rdap_data = response.json()
+
+        # Extract creation date from RDAP events
+        creation_date = None
+        for event in rdap_data.get('events', []):
+            if event.get('eventAction') == 'registration':
+                creation_date = event.get('eventDate')
+                break
+
         if not creation_date:
-            return False # Info not available, assume not new
+            return False  # Info not available, assume not new
 
-        # whois can return a list or a single datetime object
-        if isinstance(creation_date, list):
-            creation_date = creation_date[0]
-            
-        if creation_date is None:
-            return False
+        # Parse the creation date (ISO 8601 format, e.g., '2023-10-01T12:00:00Z')
+        try:
+            creation_datetime = datetime.strptime(creation_date[:19], '%Y-%m-%dT%H:%M:%S')
+            return datetime.now() - creation_datetime < timedelta(days=days)
+        except ValueError:
+            return False  # Invalid date format, assume not new
 
-        return datetime.now() - creation_date < timedelta(days=days)
+    except requests.RequestException:
+        return 'Error'  # Network or server error
     except Exception:
-        # Many things can go wrong: unsupported TLD, timeouts, etc.
-        return 'Error'
+        return 'Error'  # General error (e.g., JSON parsing or unexpected response)
 
 def check_monetization(url):
     """
@@ -85,7 +119,7 @@ def fetch_search_results(query, tbs="qdr:d1", num_results=100):
     and monetization for each URL.
     """
     results = []
-    domain_whois_cache = {} # Cache WHOIS results to avoid redundant checks
+    domain_rdap_cache = {}  # Cache RDAP results to avoid redundant checks
 
     print(f"Fetching up to {num_results} results for query: '{query}'...")
 
@@ -117,17 +151,16 @@ def fetch_search_results(query, tbs="qdr:d1", num_results=100):
                 description = description_tag['content'].strip() if description_tag and description_tag.get('content') else "No Description Found"
                 print(f"  -> Title: {title[:70]}...")
 
-                # 2. Domain and WHOIS Check (with Caching)
+                # 2. Domain and RDAP Check (with Caching)
                 domain = get_domain_from_url(url)
-                if domain and domain not in domain_whois_cache:
+                if domain and domain not in domain_rdap_cache:
                     print(f"  -> New Domain Found: {domain}. Checking registration date...")
                     is_new = is_newly_registered(domain, days=30)
-                    domain_whois_cache[domain] = is_new # Cache the result
+                    domain_rdap_cache[domain] = is_new  # Cache the result
                     print(f"  -> Is New (30d): {is_new}")
                 elif domain:
-                    is_new = domain_whois_cache[domain] # Use cached result
+                    is_new = domain_rdap_cache[domain]  # Use cached result
                     print(f"  -> Domain: {domain} (already checked)")
-
 
                 # 3. Monetization Check
                 monetization = check_monetization(url)
@@ -191,10 +224,9 @@ def save_to_csv(results, folder_name="results", filename="results.csv"):
     final_df.to_csv(full_path, index=False, encoding='utf-8-sig')
     print(f"Successfully saved. Total unique results in file: {len(final_df)}")
 
-
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python your_script_name.py \"<query>\" <timeframe>")
+        print("Usage: python domain_checker.py \"<query>\" <timeframe>")
         print("\n<timeframe> can be: 'qdr:h' (hour), 'qdr:d' (day), 'qdr:w' (week), 'qdr:m' (month)")
         sys.exit(1)
         
