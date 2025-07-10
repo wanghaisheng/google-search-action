@@ -6,6 +6,7 @@ import pandas as pd
 import time
 import os
 from datetime import datetime
+from googlesearch import search
 
 # Define a user-agent to mimic a real browser visit
 HEADERS = {
