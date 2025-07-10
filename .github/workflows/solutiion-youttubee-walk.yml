@@ -6,7 +6,7 @@ on:
       search_query:
         description: 'Enter Google Search Query'
         required: true
-        default: 'GitHub Actions tutorial'
+        default: 'site:youtube.com "level solution walkthrough"'
       timeframe:
         description: 'Enter Google Search ttiimefrrame'
         required: true
