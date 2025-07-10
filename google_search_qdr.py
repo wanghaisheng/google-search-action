@@ -54,7 +54,7 @@ def fetch_search_results(query, tbs="qdr:d1", num_results=100):
     return results
 
 # --- UPDATED FUNCTION WITH APPEND & DEDUPLICATE LOGIC ---
-def save_to_csv(results, folder_name="results"):
+def save_to_csv(results, folder_name="results",filename="results.csv"):
     """
     Saves results to a CSV file named with the current date in a specific folder.
     If the file already exists, it appends the new results and removes duplicates based on the URL.
@@ -66,7 +66,8 @@ def save_to_csv(results, folder_name="results"):
     os.makedirs(folder_name, exist_ok=True)
     
     date_str = datetime.now().strftime("%Y-%m-%d")
-    filename = f"{date_str}.csv"
+    
+    filename = f"{filename}_{date_str}.csv"
     full_path = os.path.join(folder_name, filename)
 
     new_df = pd.DataFrame(results)
@@ -112,5 +113,5 @@ if __name__ == "__main__":
         tbs=timeframe
     # :param str tbs: Time limits ("qdr:h" => last hour, "qdr:d" => last 24 hours, "qdr:y1" => last year).
     results = fetch_search_results(query, tbs=tbs, num_results=100)
-    
-    save_to_csv(results)
+    filename=query.strip().replace(":","-")
+    save_to_csv(results,filename)
