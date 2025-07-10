@@ -208,7 +208,7 @@ if __name__ == "__main__":
 
     # Generate a dynamic filename with the current date
     date_str = datetime.now().strftime('%Y-%m-%d')
-    filename = f"{detector_name}_{category}_{date_str}.csv"
+    filename = f"{query}_adsensenew_{date_str}.csv"
 
     save_to_csv(scraped_results, folder_name="results", filename=filename)
     
