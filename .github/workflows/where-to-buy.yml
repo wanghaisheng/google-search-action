@@ -1,4 +1,4 @@
-name: app paywall Search - Paywall Anger
+name: qiu-lianjie
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
       search_query:
         description: 'Enter tiktok Search Query'
         required: true
-        default: 'site:tiktok.com "app paywall scam subscription trap forced to pay"'  # PREDEFINED QUERY
+        default: 'site:tiktok.com intext:( "link please" OR "where to buy" OR "where can I find" OR "where did you get this" OR "what is it called" OR "drop the link" OR "pls link" OR "can i get the link" OR "what"s the link" OR "link to buy" OR "source?" OR "where can i find it?" OR "where can i get it?" OR "product recs?" OR "product recommendations?" OR "what brand is it?" OR "what brand?" OR "where"s it from?" OR "link in comments")'  # PREDEFINED QUERY
       timeframe:
         description: 'Enter tiktok Search timeframe'
         required: true
